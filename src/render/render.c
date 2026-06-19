@@ -1,0 +1,81 @@
+#include "render.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
+
+static void render_background(Game *game) {
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        game->background_color.r,
+        game->background_color.g,
+        game->background_color.b,
+        game->background_color.a
+        );
+
+    SDL_RenderClear(game->renderer);
+}
+
+static void render_paddle(World *world, Game *game) {
+    SDL_Rect paddle = {
+        (int)world->paddle->position.x,
+        (int)world->paddle->position.y,
+        (int)world->paddle->size.w,
+        (int)world->paddle->size.h
+    };
+
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        world->paddle->color.r,
+        world->paddle->color.g,
+        world->paddle->color.b,
+        world->paddle->color.a
+    );
+
+    SDL_RenderFillRect(game->renderer, &paddle);
+}
+
+static void render_ball(World *world, Game *game) {
+    filledCircleRGBA(
+        game->renderer,
+        world->ball->position.x,
+        world->ball->position.y,
+        world->ball->radius,
+        world->ball->color.r,
+        world->ball->color.g,
+        world->ball->color.b,
+        world->ball->color.a
+    );
+}
+
+static void render_bricks(World *world, Game *game) {
+    for (int i = 0; i < world->bricks->cols * world->bricks->rows; i++) {
+        if (world->bricks->members[i].hp <= 0) continue;
+        SDL_Rect brick = {
+            (int)world->bricks->members[i].position.x,
+            (int)world->bricks->members[i].position.y,
+            (int)world->bricks->size.w,
+            (int)world->bricks->size.h
+        };
+
+        SDL_SetRenderDrawColor(
+        game->renderer,
+        world->bricks->members[i].color.r,
+        world->bricks->members[i].color.g,
+        world->bricks->members[i].color.b,
+        world->bricks->members[i].color.a
+        );
+
+        SDL_RenderFillRect(game->renderer, &brick);
+    }
+}
+
+void render(World *world, Game *game) {
+    render_background(game);
+
+    render_paddle(world, game);
+
+    render_ball(world, game);
+
+    render_bricks(world, game);
+
+    SDL_RenderPresent(game->renderer);
+}
