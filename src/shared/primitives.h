@@ -11,4 +11,11 @@ typedef struct {
     float h;
 } Size2D;
 
+typedef enum {
+    STATE_MENU,
+    STATE_PLAY,
+    STATE_WIN,
+    STATE_LOSE
+} GameState;
+
 #endif

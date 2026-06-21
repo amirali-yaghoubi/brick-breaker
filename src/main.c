@@ -25,10 +25,12 @@
 int main() {
     
     //Initialize paramiters
+    GameState game_state;
     Game game = {
         .size = {.w = 800, .h = 600},
         .fps = 60,
         .running = 0,
+        .state = game_state,
         .background_color = {64, 64, 64, 255}
     };
     float frame_duration_ms = 1000.0 / game.fps;
@@ -51,10 +53,10 @@ int main() {
     Bricks bricks;
     bricks.padding.x = 5;
     bricks.padding.y = 5;
-    bricks.size.w = 74;
-    bricks.size.h = 22;
-    bricks.cols = 10;
-    bricks.rows = 6;
+    bricks.size.w = 200;
+    bricks.size.h = 90;
+    bricks.cols = 2;
+    bricks.rows = 2;
 
     World world = {
         .ball = &ball,
@@ -86,7 +88,9 @@ int main() {
         paddle_update(&world, &game);
         ball_update(&world, &game);
         game.fps = 1.0 / game.delta_time;
-        
+
+        //printf("state: %d\n", game.state);
+
         //Rendering everything
         render(&world, &game);
 

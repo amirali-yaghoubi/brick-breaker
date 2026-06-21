@@ -19,6 +19,14 @@ static void collide_with_wall(World *world, Game *game) {
         world->ball->position.y = world->ball->radius;
         world->ball->velocity.y = - world->ball->velocity.y;
     }
+    if (world->ball->position.y + world->ball->radius >= game->size.h) {
+        //must be changed later, this is just a temporary placeholder for loss mechanism
+        //------
+        world->ball->position.x = game->size.w / 2;
+        world->ball->position.y = game->size.h / 2;
+        //------
+        game->state = STATE_LOSE;
+    }
 }
 
 
@@ -39,7 +47,7 @@ static void collide_with_bricks(World *world, Game *game) {
    float old_x = world->ball->position.x - world->ball->velocity.x * game->delta_time;
    float old_y = world->ball->position.y - world->ball->velocity.y * game->delta_time;
    for (int i = 0; i < world->bricks->cols * world->bricks->rows; i++) {
-       if (world->bricks->members[i].hp <= 0) continue;
+       if (world->bricks->members[i].hp <= 0) continue; //No collision with the dead brick
        if ((world->ball->position.x + world->ball->radius > world->bricks->members[i].position.x) && (world->ball->position.x - world->ball->radius < world->bricks->members[i].position.x + world->bricks->size.w) && (world->ball->position.y + world->ball->radius > world->bricks->members[i].position.y) && (world->ball->position.y - world->ball->radius < world->bricks->members[i].position.y + world->bricks->size.h)) {
            if (old_y + world->ball->radius <= world->bricks->members[i].position.y) {
             world->ball->velocity.y = - world->ball->velocity.y;
@@ -54,6 +62,16 @@ static void collide_with_bricks(World *world, Game *game) {
             world->ball->velocity.x = - world->ball->velocity.x;
             }
             world->bricks->members[i].hp = 0;
+            int alive = 0;
+            for (int k = 0; k < world->bricks->cols * world->bricks->rows; k++) {
+                if (world->bricks->members[k].hp != 0) {
+                    alive = 1;
+                    break;
+                }
+            }
+            if (!alive) {
+                game->state = STATE_WIN;
+            }
             break;
         }
     }
@@ -62,13 +80,6 @@ static void collide_with_bricks(World *world, Game *game) {
 void ball_update(World *world, Game *game) {
     move_ball(world, game);
     collide_with_wall(world, game);
-    //must be changed later, this is just a temporary placeholder for loss mechanism
-    //------
-    if (world->ball->position.y + world->ball->radius >= game->size.h) {
-        world->ball->position.x = game->size.w / 2;
-        world->ball->position.y = game->size.h / 2;
-    }
-    //------
     collide_with_paddle(world);
     collide_with_bricks(world, game);
 }

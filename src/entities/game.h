@@ -10,6 +10,7 @@ typedef struct {
     Size2D size;
     float fps;
     float delta_time;
+    GameState state;
     int running;
     SDL_Color background_color;
 } Game;
