@@ -1,8 +1,10 @@
-#include "render.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "render.h"
 
-static void render_background(Game *game) {
+
+//static functions for the game
+static void render_game_background(Game *game) {
     SDL_SetRenderDrawColor(
         game->renderer,
         game->background_color.r,
@@ -57,19 +59,76 @@ static void render_bricks(World *world, Game *game) {
         };
 
         SDL_SetRenderDrawColor(
-        game->renderer,
-        world->bricks->members[i].color.r,
-        world->bricks->members[i].color.g,
-        world->bricks->members[i].color.b,
-        world->bricks->members[i].color.a
+            game->renderer,
+            world->bricks->members[i].color.r,
+            world->bricks->members[i].color.g,
+            world->bricks->members[i].color.b,
+            world->bricks->members[i].color.a
         );
 
         SDL_RenderFillRect(game->renderer, &brick);
     }
 }
 
-void render(World *world, Game *game) {
-    render_background(game);
+
+
+//static functions for the menu
+static void render_menu_background(Menu *menu, Game *game) {
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        menu->background_color.r,
+        menu->background_color.g,
+        menu->background_color.b,
+        menu->background_color.a
+    );
+
+    SDL_RenderClear(game->renderer);
+}
+
+static void render_play_button(Menu *menu, Game *game) {
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        menu->play_button.color.r,
+        menu->play_button.color.g,
+        menu->play_button.color.b,
+        menu->play_button.color.a
+    );
+
+    SDL_RenderFillRect(game->renderer, &menu->play_button.rect);
+
+    //Text
+    SDL_RenderCopy(
+        game->renderer,
+        menu->play_button.texture,
+        NULL,
+        &menu->play_button.rect
+    );
+}
+
+static void render_exit_button(Menu *menu, Game *game) {
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        menu->exit_button.color.r,
+        menu->exit_button.color.g,
+        menu->exit_button.color.b,
+        menu->exit_button.color.a
+    );
+
+    SDL_RenderFillRect(game->renderer, &menu->exit_button.rect);
+
+    //Text
+    SDL_RenderCopy(
+        game->renderer,
+        menu->exit_button.texture,
+        NULL,
+        &menu->exit_button.rect
+    );
+}
+
+
+//Render game frame pipeline
+void render_game(World *world, Game *game) {
+    render_game_background(game);
 
     render_paddle(world, game);
 
@@ -77,5 +136,13 @@ void render(World *world, Game *game) {
 
     render_bricks(world, game);
 
+    SDL_RenderPresent(game->renderer);
+}
+
+//Render menu pipeline
+void render_menu(Menu *menu, Game *game) {
+    render_menu_background(menu, game);
+    render_play_button(menu, game);
+    render_exit_button(menu, game);
     SDL_RenderPresent(game->renderer);
 }

@@ -20,11 +20,8 @@ static void collide_with_wall(World *world, Game *game) {
         world->ball->velocity.y = - world->ball->velocity.y;
     }
     if (world->ball->position.y + world->ball->radius >= game->size.h) {
-        //must be changed later, this is just a temporary placeholder for loss mechanism
-        //------
         world->ball->position.x = game->size.w / 2;
         world->ball->position.y = game->size.h / 2;
-        //------
         game->state = STATE_LOSE;
     }
 }

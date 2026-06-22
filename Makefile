@@ -1,45 +1,71 @@
-# ===== Compiler =====
+# =====================
+# Compiler
+# =====================
 CC := gcc
 
-# ===== Output =====
-TARGET := build/main
-OBJ_DIR := build/objects
+# =====================
+# Output
+# =====================
+TARGET := build/game
+OBJ_DIR := build/obj
 
-# ===== Flags =====
-CFLAGS := -Wall -Wextra -O2 -I./src
-LDFLAGS := -lSDL2 -lSDL2_gfx -lm
+# =====================
+# Flags
+# =====================
+CFLAGS := -Wall -Wextra -I./src -O2
+LDFLAGS := -lSDL2 -lSDL2_ttf -lSDL2_gfx -lm
 
-# ===== Sources =====
+# =====================
+# Sources
+# =====================
 SRC := $(shell find src -name "*.c")
-
-# تبدیل src/xxx.c → build/objects/src/xxx.o
 OBJ := $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(SRC))
 
-# ===== Default =====
-all: $(TARGET) run
+# =====================
+# Default
+# =====================
+all: $(TARGET)
 
-# ===== Link =====
+# =====================
+# Link
+# =====================
 $(TARGET): $(OBJ) | build
 	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# ===== Compile =====
+# =====================
+# Compile
+# =====================
 $(OBJ_DIR)/%.o: src/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# ===== Create dirs =====
+# =====================
+# Create dirs
+# =====================
 build:
-	mkdir -p build $(OBJ_DIR)
+	@mkdir -p build $(OBJ_DIR)
 
-# ===== Run =====
+# =====================
+# Run
+# =====================
 run: $(TARGET)
 	./$(TARGET)
 
-# ===== Clean =====
+# =====================
+# Debug build
+# =====================
+debug:
+	$(MAKE) CFLAGS="-Wall -Wextra -I./src -g -O0" LDFLAGS="$(LDFLAGS)"
+
+# =====================
+# Clean
+# =====================
 clean:
 	rm -rf build
 
-# ===== Rebuild =====
+# =====================
+# Rebuild
+# =====================
 re: clean all
 
-.PHONY: all clean re build run
+.PHONY: all clean re run debug build

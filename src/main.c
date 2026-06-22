@@ -6,26 +6,32 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
+
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
 #include "entities/game.h"
 #include "entities/world.h"
 #include "entities/bricks.h"
+
 #include "render/render.h"
+
 #include "platform/sdl_init.h"
 #include "platform/events.h"
+
 #include "systems/paddle.h"
 #include "systems/ball.h"
 
+#include "ui/menu_init.h"
+#include "ui/menu.h"
+
 
 
 //---------------------------------------
-//---------------------------------------
-//Main
 int main() {
     
     //Initialize paramiters
-    GameState game_state;
+    GameState game_state = STATE_MENU;
     Game game = {
         .size = {.w = 800, .h = 600},
         .fps = 60,
@@ -53,16 +59,57 @@ int main() {
     Bricks bricks;
     bricks.padding.x = 5;
     bricks.padding.y = 5;
-    bricks.size.w = 200;
-    bricks.size.h = 90;
-    bricks.cols = 2;
-    bricks.rows = 2;
+    bricks.size.w = 74;
+    bricks.size.h = 22;
+    bricks.cols = 10;
+    bricks.rows = 5;
 
     World world = {
         .ball = &ball,
         .paddle = &paddle,
         .bricks = &bricks
     };
+
+    //Initialize menu
+    int play_button_w = (int)(game.size.w * 0.29f);
+    int play_button_h = (int)(game.size.h * 0.10f);
+
+    int exit_button_w = play_button_w;
+    int exit_button_h = play_button_h;
+
+    SDL_Rect play_button = {
+        .x = (game.size.w - play_button_w) / 2,
+        .y = ((game.size.h - play_button_h) / 2) - game.size.h * 0.1f,
+        .w = play_button_w,
+        .h = play_button_h
+        };
+    SDL_Rect exit_button = {
+        .x = (game.size.w - exit_button_w) / 2,
+        .y = ((game.size.h - exit_button_h) / 2) + game.size.h * 0.06f,
+        .w = exit_button_w,
+        .h = exit_button_h
+        };
+    Menu menu = {
+        .background_color = {120, 130, 230, 255},
+
+        .play_button = {
+            .rect = play_button,
+            .color = {20, 90, 70, 255},
+            .text = "Play",
+            .text_color = {255, 255, 255, 255}
+        },
+
+        .exit_button = {
+            .rect = exit_button,
+            .color = {80, 70, 15, 255},
+            .text = "Exit",
+            .text_color = {255, 255, 255, 255}
+        }
+    };
+
+
+    //Initialize Input State struct
+    InputState input_state = {0};
 
     //Initialize SDL
     if (init_sdl(&game) != 0) return 1;
@@ -73,33 +120,54 @@ int main() {
         return 1;
     }
 
+    menu_init(&menu, &game);
+
     //Main loop
     game.running = 1;
     Uint32 last_time = SDL_GetTicks();
     while (game.running) {
+
+        if (input_state.quit == 1) {
+            game.running = 0;
+        }
+
+        //Delta time
         Uint32 current_time  = SDL_GetTicks();
         game.delta_time = (current_time - last_time) / 1000.0f;
         last_time = current_time;
         
-        //Event loop
-        handle_events(&world, &game);
+        //Get events
+        handle_events(&input_state);
 
-        //Updating the game
-        paddle_update(&world, &game);
-        ball_update(&world, &game);
-        game.fps = 1.0 / game.delta_time;
+        //handle game states
+        switch (game.state) {
+            case STATE_PLAY:
+                //Updating the game
+                paddle_update(&world, &game);
+                ball_update(&world, &game);
+                game.fps = 1.0 / game.delta_time;
+                //Render
+                render_game(&world, &game);
+                break;
 
-        //printf("state: %d\n", game.state);
+            case STATE_MENU:
+                menu_reponse(&input_state, &menu, &game);
+                render_menu(&menu, &game);
+                break;
 
-        //Rendering everything
-        render(&world, &game);
+            //Temporary, because we do not have the lose and win mechanisms and screen/menu YET
+            default:
+                break;
+        }
 
+        //Fps cap
         Uint32 frame_time = SDL_GetTicks() - current_time;
         if (frame_time < frame_duration_ms) {
             SDL_Delay((Uint32)frame_duration_ms - frame_time);
         }
     }
 
+    //Cleanup
     cleanup_sdl(&game);
     free_bricks(world.bricks);
 

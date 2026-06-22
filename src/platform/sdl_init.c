@@ -1,8 +1,12 @@
 #include "sdl_init.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 
 
 int init_sdl(Game *game) {
+    TTF_Init();
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
         return 1;
@@ -30,7 +34,7 @@ int init_sdl(Game *game) {
         SDL_Quit();
         return 1;
     }
-    
+   
     return 0;
 }
 
