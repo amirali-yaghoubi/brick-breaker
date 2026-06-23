@@ -20,6 +20,6 @@ typedef struct {
 
 int generate_bricks_array(Bricks *bricks);
 void free_bricks(Bricks *bricks);
-
+void reset_bricks_hp(Bricks *bricks);
 
 #endif

@@ -77,9 +77,12 @@ int main() {
     int exit_button_w = play_button_w;
     int exit_button_h = play_button_h;
 
+    int game_result_w = play_button_w;
+    int game_result_h = play_button_h;
+
     SDL_Rect play_button = {
         .x = (game.size.w - play_button_w) / 2,
-        .y = ((game.size.h - play_button_h) / 2) - game.size.h * 0.1f,
+        .y = ((game.size.h - play_button_h) / 2) - game.size.h * 0.10f,
         .w = play_button_w,
         .h = play_button_h
         };
@@ -89,21 +92,44 @@ int main() {
         .w = exit_button_w,
         .h = exit_button_h
         };
+    SDL_Rect game_result = {
+        .x = (game.size.w - play_button_w) / 2,
+        .y = ((game.size.h - play_button_h) / 2) - game.size.h * 0.30f,
+        .w = game_result_w,
+        .h = game_result_h
+        };
+
     Menu menu = {
         .background_color = {120, 130, 230, 255},
 
         .play_button = {
             .rect = play_button,
-            .color = {20, 90, 70, 255},
-            .text = "Play",
-            .text_color = {255, 255, 255, 255}
+            .text = (Text){
+                .string = "Play",
+                .color = {225, 255, 255, 255},
+                .texture = NULL
+                },
+            .background_color = {20, 90, 70, 255}
         },
 
         .exit_button = {
             .rect = exit_button,
-            .color = {80, 70, 15, 255},
-            .text = "Exit",
-            .text_color = {255, 255, 255, 255}
+            .text = {
+                .string = "Exit",
+                .color = {255, 255, 255, 255},
+                .texture = NULL
+            },
+            .background_color = {80, 70, 15, 255}
+        },
+
+        .game_result = {
+            .rect = game_result,
+            .text = {
+                .string = ".",
+                .color = {0, 0, 0, 0},
+                .texture = NULL
+            },
+            .background_color = {0, 0, 0, 0}
         }
     };
 
@@ -150,12 +176,33 @@ int main() {
                 render_game(&world, &game);
                 break;
 
-            case STATE_MENU:
+            default:
+                // To prepare the texts to be rendered(generating textures)
+                menu_init(&menu, &game);
+                //Update menu
                 menu_reponse(&input_state, &menu, &game);
                 render_menu(&menu, &game);
+                //reset the game bricks
+                reset_bricks_hp(world.bricks);
+                break;
+        }
+
+        //To change the text and color based on tge game state
+        switch (game.state) {
+            case STATE_MENU:
+                menu.game_result.text.string = "Wellcome!";
+                menu.game_result.text.color = (SDL_Color){255, 255, 255, 255};
                 break;
 
-            //Temporary, because we do not have the lose and win mechanisms and screen/menu YET
+            case STATE_LOSE:
+                menu.game_result.text.string = "You Lose!";
+                menu.game_result.text.color = (SDL_Color){255, 0, 0, 255};
+                break;
+
+            case STATE_WIN:
+                menu.game_result.text.string = "You Won!";
+                menu.game_result.text.color = (SDL_Color){0, 255, 0, 255};
+                break;
             default:
                 break;
         }

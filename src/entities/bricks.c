@@ -34,3 +34,9 @@ void free_bricks(Bricks *bricks) {
     free(bricks->members);
     bricks->members = NULL;
 }
+
+void reset_bricks_hp(Bricks *bricks) {
+    for (int i = 0; i < bricks->cols * bricks->rows; i++) {
+        bricks->members[i].hp = 1;
+    }
+}

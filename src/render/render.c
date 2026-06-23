@@ -88,10 +88,10 @@ static void render_menu_background(Menu *menu, Game *game) {
 static void render_play_button(Menu *menu, Game *game) {
     SDL_SetRenderDrawColor(
         game->renderer,
-        menu->play_button.color.r,
-        menu->play_button.color.g,
-        menu->play_button.color.b,
-        menu->play_button.color.a
+        menu->play_button.background_color.r,
+        menu->play_button.background_color.g,
+        menu->play_button.background_color.b,
+        menu->play_button.background_color.a
     );
 
     SDL_RenderFillRect(game->renderer, &menu->play_button.rect);
@@ -99,7 +99,7 @@ static void render_play_button(Menu *menu, Game *game) {
     //Text
     SDL_RenderCopy(
         game->renderer,
-        menu->play_button.texture,
+        menu->play_button.text.texture,
         NULL,
         &menu->play_button.rect
     );
@@ -108,10 +108,10 @@ static void render_play_button(Menu *menu, Game *game) {
 static void render_exit_button(Menu *menu, Game *game) {
     SDL_SetRenderDrawColor(
         game->renderer,
-        menu->exit_button.color.r,
-        menu->exit_button.color.g,
-        menu->exit_button.color.b,
-        menu->exit_button.color.a
+        menu->exit_button.background_color.r,
+        menu->exit_button.background_color.g,
+        menu->exit_button.background_color.b,
+        menu->exit_button.background_color.a
     );
 
     SDL_RenderFillRect(game->renderer, &menu->exit_button.rect);
@@ -119,12 +119,31 @@ static void render_exit_button(Menu *menu, Game *game) {
     //Text
     SDL_RenderCopy(
         game->renderer,
-        menu->exit_button.texture,
+        menu->exit_button.text.texture,
         NULL,
         &menu->exit_button.rect
     );
 }
 
+static void render_game_result(Menu *menu, Game *game) {
+    SDL_SetRenderDrawColor(
+        game->renderer,
+        menu->game_result.background_color.r,
+        menu->game_result.background_color.g,
+        menu->game_result.background_color.b,
+        menu->game_result.background_color.a
+    );
+
+    SDL_RenderFillRect(game->renderer, &menu->game_result.rect);
+
+    //Text
+    SDL_RenderCopy(
+        game->renderer,
+        menu->game_result.text.texture,
+        NULL,
+        &menu->game_result.rect
+    );
+}
 
 //Render game frame pipeline
 void render_game(World *world, Game *game) {
@@ -144,5 +163,6 @@ void render_menu(Menu *menu, Game *game) {
     render_menu_background(menu, game);
     render_play_button(menu, game);
     render_exit_button(menu, game);
+    render_game_result(menu, game);
     SDL_RenderPresent(game->renderer);
 }

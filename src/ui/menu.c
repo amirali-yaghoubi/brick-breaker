@@ -11,7 +11,6 @@ static void exit_button_response(Game *game) {
 }
 
 
-
 void menu_reponse(
     InputState *input_state,
     Menu *menu,
@@ -26,5 +25,15 @@ void menu_reponse(
         if (SDL_PointInRect(&mouse, &menu->exit_button.rect)) {
             exit_button_response(game);
         }
+    }
+}
+
+void update_game_result(Menu *menu, Game *game) {
+    if (game->state == STATE_LOSE) {
+        menu->game_result.text.string = "You Lose!";
+    }
+
+    if (game->state == STATE_WIN) {
+        menu->game_result.text.string = "You WON!";
     }
 }
