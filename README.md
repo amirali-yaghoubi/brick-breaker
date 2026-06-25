@@ -21,12 +21,6 @@ Version 1.0 (initial stable release).
 
 ### Install requirements
 
-```
-- SDL2
-- SDL2_ttf
-- SDL2_gfx
-```
-
 ### Ubuntu / Debian
 
 ```
