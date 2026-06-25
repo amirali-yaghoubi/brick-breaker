@@ -12,8 +12,12 @@ Version 1.0 (initial stable release).
 - Win/Lose system
 
 ## Requirements
+
+```
 - SDL2
 - SDL2_ttf
+- SDL2_gfx
+```
 
 ### Install requirements
 
